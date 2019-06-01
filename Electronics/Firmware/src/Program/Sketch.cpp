@@ -35,16 +35,21 @@
 #include "./Lib_Chicago/I2C/i2c.h"
 #include "./Lib_Chicago/Debug/cmd.h"
 
+#include "./Lib_TPS61194/tps61194.h"
+
 
 //#############################################################################
 // Pre-compiler Definitions
 //-----------------------------------------------------------------------------
-
+//#define USE_BACKLIGHT_DRIVER
 
 //#############################################################################
 // Variable Declarations
 //-----------------------------------------------------------------------------
 bool g_bDebug = 0;
+#ifdef USE_BACKLIGHT_DRIVER
+TPS61194_ TPS61194(PIN_backlight_pwm, PIN_backlight_vsync_in, PIN_lcd_bl_en);
+#endif
 
 
 //#############################################################################
@@ -59,14 +64,41 @@ void setup(){
 	
 	// VRPN serial debug
 	SerialUSB.begin(921600);
-
+	
+	Serial.println("");
+	Serial.println("************        Leap Motion        ***********");
+	Serial.println("*                Project North Star              *");
+	Serial.println("**************************************************");
+	Serial.printf("Firmware release: %x.%x.%x\n", ((LEAP_DISPLAY_BOARD_REV & 0xff00) >> 8),
+												  ((LEAP_DISPLAY_BOARD_REV & 0x00f0) >> 4),
+												   (LEAP_DISPLAY_BOARD_REV & 0x000f));
+	Serial.println(buildDate);
+	Serial.println(buildTime);
+	Serial.printf("Resolution: %dx%d@%dfps\n", PANEL_H_ACTIVE, PANEL_V_ACTIVE, PANEL_FRAME_RATE);
+	Serial.println("");
+	
 	// Backlight driver
-	analogWrite(PIN_backlight_pwm, 64);
+#ifdef USE_BACKLIGHT_DRIVER
+	TPS61194.setup(
+		TPS61194.vsyncModeSetup::vsyncModeOneshot,	// vsyncMode
+		PANEL_FRAME_RATE,							// frameRate
+		3333,										// oneshot delay (us)
+		1667										// oneshot pulse width (us)
+	);
+	TPS61194.brightness(512);
+	TPS61194.powerOn();
+#else
+	HDK_LCD_BL_ON();
+	HDK_LCD_BL_PWM(64);
+#endif
 	
 	// Chicago bridge
 	EXT_INTR_ENABLE();
 	chicago_state_change(STATE_NONE);
 	chicago_last_state_change(STATE_NONE);
+	
+	// indicate that the device is initialized
+	LED_YELLOW_ON();
 }
 
 void loop(){		

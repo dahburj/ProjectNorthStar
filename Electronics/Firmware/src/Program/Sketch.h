@@ -27,39 +27,40 @@
 *	proper operation of the board.
 */
 
-#ifndef START_H_
-	#define START_H_
+#ifndef SKETCH_H_
+#define SKETCH_H_
 
-	//#############################################################################
-	// Pre-compiler Definitions
-	//-----------------------------------------------------------------------------
+//#############################################################################
+// Pre-compiler Definitions
+//-----------------------------------------------------------------------------
 
+#define LEAP_DISPLAY_BOARD_REV          0x0000
 
-	//#############################################################################
-	// Type Definitions
-	//-----------------------------------------------------------------------------
+const char * buildDate = "Build date: " __DATE__ ;
+const char * buildTime = "Build time: " __TIME__ ;
+
+//#############################################################################
+// Type Definitions
+//-----------------------------------------------------------------------------
 	
 
-	//#############################################################################
-	// Function Prototypes
-	//-----------------------------------------------------------------------------	
-	/**
-	 * @brief 
-	 *		The setup routine runs once when you press reset
-	 * @ingroup Program
-	 * @return void
-	 */	
-	void setup();
+//#############################################################################
+// Function Prototypes
+//-----------------------------------------------------------------------------	
+/**
+	* @brief 
+	*		The setup routine runs once when you press reset
+	* @ingroup Program
+	* @return void
+	*/	
+void setup();
 
-	/**
-	 * @brief 
-	 *		The loop routine runs over and over again forever
-	 * @ingroup Program
-	 * @return void
-	 */
-	void loop();
-	
-	void find_i2c_devices();
-	void ME_cal(uint8_t P0, uint8_t P1, uint8_t P2, uint8_t P4);
+/**
+	* @brief 
+	*		The loop routine runs over and over again forever
+	* @ingroup Program
+	* @return void
+	*/
+void loop();
 
-#endif /* START_H_ */
+#endif /* SKETCH_H_ */
